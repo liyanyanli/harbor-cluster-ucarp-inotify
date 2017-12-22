@@ -1,0 +1,23 @@
+version: '2'
+services:
+  postgres:
+    container_name: clair_postgres
+    image: postgres:deploy
+    volumes:
+      - /data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+
+  clair:
+    container_name: clair_clair
+    image: quay.io/coreos/clair:v1.2.4
+    depends_on:
+      - postgres
+    ports:
+      - "6060-6061:6060-6061"
+    links:
+      - postgres
+    volumes:
+      - /tmp:/tmp
+      - ./clair_config:/config
+    command: [-config, /config/config.yaml]
